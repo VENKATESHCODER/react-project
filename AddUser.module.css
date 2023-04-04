@@ -1,0 +1,217 @@
+.input {
+  margin: 2rem auto;
+  padding: 1rem;
+  width: 90%;
+  max-width: 40rem;
+}
+
+.input label {
+  display: block;
+  font-weight: bold;
+  margin-bottom: 0.5rem;
+}
+
+.input input {
+  font: inherit;
+  display: block;
+  width: 100%;
+  border: 1px solid #ccc;
+  padding: 0.15rem;
+  margin-bottom: 0.5rem;
+}
+
+.input input:focus {
+  outline: none;
+  border-color: #4f005f;
+}
+
+.button {
+  font: inherit;
+  border: 1px solid #4f005f;
+  background: #4f005f;
+  color: white;
+  padding: 0.25rem 1rem;
+  cursor: pointer;
+}
+
+.button:hover,
+.button:active {
+  background: #741188;
+  border-color: #741188;
+}
+
+.button:focus {
+  outline: none;
+}
+.backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100vh;
+  z-index: 10;
+  background: rgba(0, 0, 0, 0.75);
+}
+
+.modal {
+  position: fixed;
+  top: 30vh;
+  left: 10%;
+  width: 80%;
+  z-index: 100;
+  overflow: hidden;
+}
+import React, { useState, useRef } from 'react';
+
+import Card from './Card';
+import Button from './Button';
+import ErrorModal from './ErrorModal';
+import classes from './AddUser.module.css';
+import Wrapper from './Wrapper';
+
+const AddUser = (props) => {
+  const nameInputRef = useRef();
+  const ageInputRef = useRef();
+  
+  const [error, setError] = useState();
+
+  const addUserHandler = (event) => {
+    event.preventDefault();
+    const enteredName = nameInputRef.current.value;
+    const enteredUserAge = ageInputRef.current.value;
+    if (enteredUsername.trim().length === 0 || enteredAge.trim().length === 0) {
+      setError({
+        title: 'Invalid input',
+        message: 'Please enter a valid name and age (non-empty values).',
+      });
+      return;
+    }
+    if (+enteredUserAge < 1) {
+      setError({
+        title: 'Invalid age',
+        message: 'Please enter a valid age (> 0).',
+      });
+      return;
+    }
+    props.onAddUser(enteredName, enteredUserAge);
+    nameInputRef.current.value = '';
+    ageInputRef.current.value = '';
+  };
+
+  
+
+  const errorHandler = () => {
+    setError(null);
+  };
+
+  return (
+   <Wrapper>
+      {error && (
+        <ErrorModal
+          title={error.title}
+          message={error.message}
+          onConfirm={errorHandler}
+        />
+      )}
+      <Card className={classes.input}>
+        <form onSubmit={addUserHandler}>
+          <label htmlFor="username">Username</label>
+          <input
+            id="username"
+            type="text"
+            ref={nameInputRef}
+          />
+          <label htmlFor="age">Age (Years)</label>
+          <input
+            id="age"
+            type="number"
+            ref={ageInputRef}
+          />
+          <Button type="submit">Add User</Button>
+        </form>
+      </Card>
+      </Wrapper>
+  );
+};
+
+export default AddUser;
+
+
+.header {
+  background: #4f005f;
+  padding: 1rem;
+}
+
+.header h2 {
+  margin: 0;
+  color: white;
+}
+
+.content {
+  padding: 1rem;
+}
+
+.actions {
+  padding: 1rem;
+  display: flex;
+  justify-content: flex-end;
+}
+
+@media (min-width: 768px) {
+  .modal {
+    left: calc(50% - 20rem);
+    width: 40rem;
+  }
+}
+import React from 'react';
+
+import classes from './Button.module.css';
+
+const Button = (props) => {
+  return (
+    <button
+      className={classes.button}
+      type={props.type || 'button'}
+      onClick={props.onClick}
+    >
+      {props.children}
+    </button>
+  );
+};
+
+export default Button;
+import React from 'react';
+
+import Card from './Card';
+import Button from './Button';
+import classes from './ErrorModal.module.css';
+
+const ErrorModal = (props) => {
+  return (
+    <div>
+      <div className={classes.backdrop} onClick={props.onConfirm} />
+      <Card className={classes.modal}>
+        <header className={classes.header}>
+          <h2>{props.title}</h2>
+        </header>
+        <div className={classes.content}>
+          <p>{props.message}</p>
+        </div>
+        <footer className={classes.actions}>
+          <Button onClick={props.onConfirm}>Okay</Button>
+        </footer>
+      </Card>
+    </div>
+  );
+};
+
+export default ErrorModal;
+import React from 'react';
+
+import classes from './Card.module.css';
+
+const Card = (props) => {
+  return <div className={`${classes.card} ${props.className}`}>{props.children}</div>;
+};
+
+export default Card;
